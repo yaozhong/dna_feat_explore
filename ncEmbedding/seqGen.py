@@ -26,8 +26,8 @@ def genDLTrainData(split=0.8, cache=True):
 	X_ex = np.array([seq2onehot(x) for x in ex_seqs ],dtype=np.float32)
 	X_nc = np.array([seq2onehot(x) for x in nc_seqs],dtype=np.float32)
 
-	Y_ex = np.ones(len(ex_seqs)).reshape(len(ex_seqs),1)
-	Y_nc = np.zeros(len(nc_seqs)).reshape(len(nc_seqs),1)
+	Y_ex = np.ones(len(ex_seqs), dtype=np.int32)	
+	Y_nc = np.zeros(len(nc_seqs), dtype=np.int32)
 
 	tidx =  int(split * len(ex_seqs))
 	X_ex_part1, X_ex_part2 = np.split(X_ex, [tidx])
@@ -90,7 +90,7 @@ def trainDL():
 	print('# [epoch]: {}'.format(args.epoch))
 	print('')
 
-	model = L.Classifier(CNN(n_kernel))
+	model = Augmentor(CNN(int(args.binSize/2), n_kernel))
 
 	if args.gpu >= 0:
 		chainer.cuda.get_device_from_id(args.gpu).use()
@@ -106,12 +106,14 @@ def trainDL():
 	updater = training.StandardUpdater(train_iter, optimizer, device=args.gpu)
 	trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
 	trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu))
-	trainer.extend(extensions.dump_graph('main/MAE'))
+
+	trainer.extend(extensions.LogReport(log_name="train.log"))
+	trainer.extend(extensions.dump_graph('main/ACC'))
 
 	if extensions.PlotReport.available():
-		trainer.extend(extensions.PlotReport(['main/ACC', 'test/ACC'], 'epoch', file_name= "acc_curve.png"))
+		trainer.extend(extensions.PlotReport(['main/ACC', 'validation/ACC'], 'epoch', file_name= "acc_curve.png"))
 
-	trainer.extend(extensions.PrintReport(['epoch', 'main/ACC', 'test/ACC', 'elapsed_time']))
+	trainer.extend(extensions.PrintReport(['epoch', 'main/ACC', 'main/LOSS', 'validation/main/ACC', 'validation/main/LOSS','elapsed_time']))
 	trainer.extend(extensions.ProgressBar())
 
 	## running the training process

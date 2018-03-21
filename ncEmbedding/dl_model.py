@@ -49,31 +49,45 @@ class MLP(chainer.Chain):
 		return y
 
 
-
+# definition of classical CNN
 class CNN(chainer.Chain):
-	def __init__(self, n_kernel=1):
+	def __init__(self,  h_unit=100, n_kernel=1):
 		super(CNN, self).__init__()
 		with self.init_scope():
 			self.conv1 = L.Convolution2D(n_kernel, 32, (1, 7))  # in_channel, out_kernel, filter-size, stride, pad_0
 			self.conv2 = L.Convolution2D(32, 64, (1, 3))
 			self.conv3 = L.Convolution2D(64, 128, (1, 3))
-		
-			self.bn1 = L.BatchNormalization(size=32)
-			self.bn2 = L.BatchNormalization(size=64)
-			self.bn3 = L.BatchNormalization(size=128)
 			
+			self.fc = L.Linear(None, h_unit)
 			self.lo = L.Linear(None,2)
 
-	def __call__(self, x, t): 
+	def __call__(self, x): 
 		
-		h1 = F.leaky_relu((self.conv1(x)))
-		h2 = F.leaky_relu((self.conv2(h1)))
-		#h3 = F.leaky_relu((self.conv3(h2)))
-		#y = F.log_softmax(self.lo(h1))
-		y = self.lo(h2)
-
-		accuracy = F.accuracy(F.log_softmax(y), t)
-		reporter.report({'ACC': accuracy}, self)
+		h1 = F.max_pooling_2d(F.relu(self.conv1(x)), 3)
+		h2 = F.max_pooling_2d(F.relu(self.conv2(h1)), 3)
+		hf = self.fc(h2)
+		y = self.lo(hf)
 
 		return y
+
+
+class Augmentor(chainer.Chain):
+	def __init__(self, predictor):
+		super(Augmentor, self).__init__(predictor=predictor)
+
+	def __call__(self, x, t):
+
+		y = self.predictor(x)
+		self.loss = F.softmax_cross_entropy(y, t)
+		self.acc = F.accuracy(y, t)
+
+		reporter.report({'LOSS': self.loss}, self)
+		reporter.report({'ACC': self.acc}, self)
+
+		return self.loss
+
+	def predict(self, x):
+		y = self.predictor(x)
+		return y
+
 
