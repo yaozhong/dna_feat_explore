@@ -14,6 +14,15 @@ with the classification performance of exosome coding region and random non-codi
 * One-hot encoding
 * k-mer embedding
 
+1. One-hot encoding experiments
+
+| bin size |  sample num |  CNN  |  MLP |
+|----------|-------------|-------|------|
+| 100      | 372027 * 2  | 82.2% | 78.8%|
+| 1000     |   3983 * 2  | 87%   | 74.8% | 
+
+
+2. k-mer embedding experiments
 
 
 
