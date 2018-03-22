@@ -1,14 +1,19 @@
-## DNA nucleotide sequence feature exploration
+# DNA nucleotide sequence feature exploration
 
-### Background
-In this work, we focused on exploring different represenation approaches
+## Background
+In this work, we focused on exploring different representation approaches
 for nucleotide sequences of a piece of DNA sequence.
 We first sample sequences from exosome coding region and other non-coding
 regions. 
 
-[Assumption]: We aim to find sequence representations that can distinguish
-the coding and noncoding sequences.
+###[Assumption]: 
+The effectiveness of nucleotide sequence representation is evaluated
+with the classification performance of exosome coding region and random non-coding region.
 
-[Represeantions]:
-* One-hot-coding
+###[Representation]:
+* One-hot encoding
 * k-mer embedding
+
+
+
+
