@@ -1,5 +1,9 @@
 from __future__ import division
-from util import *
+
+import sys
+sys.path.insert(0, '../')
+
+from ncEmbed_util.util import *
 from dl_model import *
 from chainer.datasets import tuple_dataset
 

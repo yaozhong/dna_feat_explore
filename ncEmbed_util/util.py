@@ -166,7 +166,7 @@ def getData(nlen=100):
 	
 	ref_fasta="/data/Dataset/1000GP/reference/hs37d5.fa"
 	exome_gtf="/data/Dataset/1000GP/phase3/p3_ref/exome_pull_down_targets/20130108.exome.targets.bed"
-	chr_range_gtf="./chr_range_h37.gtf"
+	chr_range_gtf="../ncEmbed_util/chr_range_h37.gtf"
 
 	g = GENOMICSEQ(ref_fasta, exome_gtf, chr_range_gtf)
 	ex_seqs = g.sample_ex_seqs(nlen)
