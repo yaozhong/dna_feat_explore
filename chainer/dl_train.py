@@ -61,7 +61,7 @@ def genDLTrainData(seqLen=100, split=0.8, cache=True):
 	return train, test
 
 
-def trainDL(seqLen=100):
+def trainDL():
 
 	parser = argparse.ArgumentParser(description='coding and non-coding sequence distinguish')
 
@@ -75,15 +75,15 @@ def trainDL(seqLen=100):
 	parser.add_argument('--resume', '-r', default='', help='Resume the raining from snapshot')
 
 	parser.add_argument('--gpu', '-g', type=int, default=1, help='GPU ID (if none -1)')
-	parser.add_argument('--binSize', '-b', type=int, default=100, help='binSize')
+	parser.add_argument('--binSize', '-b', required=True, type=int, default=100, help='binSize')
 
 	parser.add_argument('--unit', '-u', type=int, default=64, help='Number of units')
-	parser.add_argument('--model', '-m', default=CNN, help='deep learning model')
+	parser.add_argument('--model', '-m', required=True, default=MLP, help='deep learning model')
 	
 	args = parser.parse_args()
 	n_kernel = 4
 
-	train, test = genDLTrainData(seqLen)
+	train, test = genDLTrainData(args.binSize)
 	## now training deep learning models from here
 
 	print '-----------Data Loading Done---------------'
@@ -94,7 +94,7 @@ def trainDL(seqLen=100):
 	print('# [epoch]: {}'.format(args.epoch))
 	print('')
 
-	model = Augmentor(CNN(1000, n_kernel))
+	model = Augmentor(globals()[args.model](int(args.binSize/2), n_kernel))
 
 	if args.gpu >= 0:
 		chainer.cuda.get_device_from_id(args.gpu).use()
@@ -130,7 +130,7 @@ def trainDL(seqLen=100):
 
 
 if __name__ == "__main__":
-	trainDL(100)
+	trainDL()
 
 
 
